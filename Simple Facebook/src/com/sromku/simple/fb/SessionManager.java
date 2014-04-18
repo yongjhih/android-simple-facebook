@@ -16,7 +16,7 @@ import com.facebook.widget.FacebookDialog.Callback;
 import com.facebook.widget.FacebookDialog.PendingCall;
 import com.sromku.simple.fb.Permission.Type;
 import com.sromku.simple.fb.SimpleFacebookConfiguration.Builder;
-import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.IOnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnNewPermissionsListener;
 import com.sromku.simple.fb.listeners.OnReopenSessionListener;
@@ -30,10 +30,16 @@ public class SessionManager {
 	static SimpleFacebookConfiguration configuration;
 	private final SessionStatusCallback mSessionStatusCallback;
 	private UiLifecycleHelper uiLifecycleHelper;
+	static SimpleFacebook simpleFacebook;
 
 	private Callback mFacebookDialogCallback;
 
 	public SessionManager(Activity activity, SimpleFacebookConfiguration configuration) {
+		this(null, activity, configuration);
+	}
+
+	public SessionManager(SimpleFacebook simpleFacebook, Activity activity, SimpleFacebookConfiguration configuration) {
+		SessionManager.simpleFacebook = simpleFacebook;
 		SessionManager.activity = activity;
 		SessionManager.configuration = configuration;
 		mSessionStatusCallback = new SessionStatusCallback();
@@ -45,7 +51,7 @@ public class SessionManager {
 	 * 
 	 * @param onLoginListener
 	 */
-	public void login(OnLoginListener onLoginListener) {
+	public void login(IOnLoginListener onLoginListener) {
 		if (onLoginListener == null) {
 			Logger.logError(TAG, "OnLoginListener can't be null in -> 'login(OnLoginListener onLoginListener)' method.");
 			return;
@@ -72,6 +78,7 @@ public class SessionManager {
 		}
 		else {
 			onLoginListener.onLogin();
+			onLoginListener.onLogin(simpleFacebook);
 		}
 	}
 
@@ -277,7 +284,7 @@ public class SessionManager {
 			public void onLogout() {
 				final boolean prevValue = configuration.mAllAtOnce;
 				configuration.mAllAtOnce = showPublish;
-				login(new OnLoginListener() {
+				login(new IOnLoginListener() {
 
 					@Override
 					public void onFail(String reason) {
@@ -307,6 +314,11 @@ public class SessionManager {
 					public void onLogin() {
 						configuration.mAllAtOnce = prevValue;
 						onNewPermissionListener.onSuccess(getAccessToken());
+					}
+
+					@Override
+					public void onLogin(SimpleFacebook simpleFacebook) {
+						onLogin();
 					}
 				});
 			}
@@ -418,7 +430,7 @@ public class SessionManager {
 		private boolean askPublishPermissions = false;
 		private boolean doOnLogin = false;
 		private OnReopenSessionListener onReopenSessionListener = null;
-		OnLoginListener onLoginListener = null;
+		IOnLoginListener onLoginListener = null;
 		OnLogoutListener onLogoutListener = null;
 
 		public void setOnReopenSessionListener(OnReopenSessionListener onReopenSessionListener) {
@@ -440,6 +452,7 @@ public class SessionManager {
 				else {
 					if (onLoginListener != null) {
 						onLoginListener.onException(exception);
+						// TODO onLoginListener.onException(simpleFacebook, exception);
 					}
 				}
 			}
@@ -463,6 +476,7 @@ public class SessionManager {
 			case OPENING:
 				if (onLoginListener != null) {
 					onLoginListener.onThinking();
+					// TODO onLoginListener.onThinking(simpleFacebook);
 				}
 				break;
 
@@ -490,6 +504,7 @@ public class SessionManager {
 						 */
 						doOnLogin = false;
 						onLoginListener.onLogin();
+						onLoginListener.onLogin(simpleFacebook);
 					}
 					else {
 						doOnLogin = true;
@@ -500,6 +515,7 @@ public class SessionManager {
 				else {
 					if (onLoginListener != null) {
 						onLoginListener.onLogin();
+						onLoginListener.onLogin(simpleFacebook);
 					}
 				}
 				break;
@@ -524,6 +540,7 @@ public class SessionManager {
 
 					if (onLoginListener != null) {
 						onLoginListener.onLogin();
+						onLoginListener.onLogin(simpleFacebook);
 					}
 				}
 

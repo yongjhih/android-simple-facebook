@@ -95,7 +95,7 @@ public class SimpleFacebook {
 	public static void initialize(Activity activity) {
 		if (mInstance == null) {
 			mInstance = new SimpleFacebook();
-			mSessionManager = new SessionManager(mActivity, mConfiguration);
+			mSessionManager = new SessionManager(mInstance, mActivity, mConfiguration);
 		}
 		mActivity = activity;
 		SessionManager.activity = activity;
@@ -123,7 +123,7 @@ public class SimpleFacebook {
 	public static SimpleFacebook getInstance(Activity activity) {
 		if (mInstance == null) {
 			mInstance = new SimpleFacebook();
-			mSessionManager = new SessionManager(activity, mConfiguration);
+			mSessionManager = new SessionManager(mInstance, activity, mConfiguration);
 		}
 		mActivity = activity;
 		SessionManager.activity = activity;

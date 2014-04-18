@@ -3,6 +3,7 @@ package com.sromku.simple.fb.listeners;
 import android.app.Activity;
 
 import com.sromku.simple.fb.Permission;
+import com.sromku.simple.fb.SimpleFacebook;
 
 /**
  * On login/logout actions listener
@@ -12,6 +13,10 @@ import com.sromku.simple.fb.Permission;
 public class OnLoginListener implements IOnLoginListener {
     @Override
     public void onLogin() {
+    }
+
+    @Override
+    public void onLogin(SimpleFacebook simpleFacebook) {
     }
 
     @Override

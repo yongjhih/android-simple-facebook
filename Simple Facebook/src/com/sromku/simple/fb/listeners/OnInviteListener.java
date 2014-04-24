@@ -2,8 +2,20 @@ package com.sromku.simple.fb.listeners;
 
 import java.util.List;
 
-public interface OnInviteListener extends OnErrorListener {
-    void onComplete(List<String> invitedFriends, String requestId);
+public class OnInviteListener implements IOnInviteListener {
+    @Override
+    public void onComplete(List<String> invitedFriends, String requestId) {
+    }
 
-    void onCancel();
+    @Override
+    public void onCancel() {
+    }
+
+	@Override
+	public void onException(Throwable throwable) {
+	}
+
+	@Override
+	public void onFail(String reason) {
+	}
 }

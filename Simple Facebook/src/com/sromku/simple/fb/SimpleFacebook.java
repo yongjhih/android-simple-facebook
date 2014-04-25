@@ -1159,4 +1159,7 @@ public class SimpleFacebook {
 		SessionManager.activity = null;
 	}
 
+	public Activity getActivity() {
+		return mActivity;
+	}
 }

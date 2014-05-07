@@ -106,6 +106,9 @@ public class PublishAction extends AbstractAction {
 	}
 
 	private void publishImpl(Publishable publishable, final OnPublishListener onPublishListener) {
+		if (mOnPublishListener != null) {
+			mOnPublishListener.onStartPublish();
+		}
 		Session session = sessionManager.getActiveSession();
 		Request request = new Request(session, mTarget + "/" + publishable.getPath(), publishable.getBundle(), HttpMethod.POST, new Request.Callback() {
 			@Override

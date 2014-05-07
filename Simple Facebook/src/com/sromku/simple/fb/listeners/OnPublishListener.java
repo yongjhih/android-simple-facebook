@@ -6,4 +6,8 @@ package com.sromku.simple.fb.listeners;
  * @author sromku
  */
 public abstract class OnPublishListener extends OnActionListener<String> {
+
+	public void onStartPublish() {
+	}
+
 }

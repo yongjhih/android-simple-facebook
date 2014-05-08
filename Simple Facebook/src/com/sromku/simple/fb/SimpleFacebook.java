@@ -12,6 +12,7 @@ import com.facebook.Session;
 import com.sromku.simple.fb.actions.DeleteRequestAction;
 import com.sromku.simple.fb.actions.GetAction;
 import com.sromku.simple.fb.actions.GetAlbumsAction;
+import com.sromku.simple.fb.actions.GetAppFriendsAction;
 import com.sromku.simple.fb.actions.GetAppRequestsAction;
 import com.sromku.simple.fb.actions.GetCheckinsAction;
 import com.sromku.simple.fb.actions.GetCommentsAction;
@@ -436,6 +437,17 @@ public class SimpleFacebook {
 	 */
 	public void getFriends(Properties properties, OnFriendsListener onFriendsListener) {
 		GetFriendsAction getFriendsAction = new GetFriendsAction(mSessionManager);
+		getFriendsAction.setProperties(properties);
+		getFriendsAction.setActionListener(onFriendsListener);
+		getFriendsAction.execute();
+	}
+
+	public void getAppFriends(OnFriendsListener onFriendsListener) {
+		getAppFriends(null, onFriendsListener);
+	}
+
+	public void getAppFriends(Properties properties, OnFriendsListener onFriendsListener) {
+		GetAppFriendsAction getFriendsAction = new GetAppFriendsAction(mSessionManager);
 		getFriendsAction.setProperties(properties);
 		getFriendsAction.setActionListener(onFriendsListener);
 		getFriendsAction.execute();

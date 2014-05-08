@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
@@ -53,6 +54,7 @@ public class Profile implements User {
 	private List<String> mFavoriteAthletess;
 	private List<String> mFavoriteTeams;
 	private String mPicture;
+	private String mPicSquare;
 	private String mQuotes;
 	private String mRelationshipStatus;
 	private String mReligion;
@@ -172,6 +174,8 @@ public class Profile implements User {
 		// picture
 		GraphObject data = Utils.getPropertyGraphObject(mGraphObject, Properties.PICTURE);
 		mPicture = Utils.getPropertyInsideProperty(data, "data", "url");
+
+		mPicSquare = Utils.getPropertyString(mGraphObject, Properties.PIC_SQUARE);
 
 		// quotes
 		mQuotes = Utils.getPropertyString(mGraphObject, Properties.QUOTES);
@@ -575,6 +579,9 @@ public class Profile implements User {
 	 * @return The user's profile pic
 	 */
 	public String getPicture() {
+		if (!TextUtils.isEmpty(mPicSquare)) {
+			return mPicSquare;
+		}
 		return mPicture;
 	}
 
@@ -1030,6 +1037,8 @@ public class Profile implements User {
 		 * 
 		 */
 		public static final String PICTURE = "picture";
+
+		public static final String PIC_SQUARE = "pic_square";
 
 		/**
 		 * <b>Description:</b><br>

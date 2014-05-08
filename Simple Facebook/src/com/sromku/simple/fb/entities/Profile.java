@@ -54,7 +54,15 @@ public class Profile implements User {
 	private List<String> mFavoriteAthletess;
 	private List<String> mFavoriteTeams;
 	private String mPicture;
+	private String mPic;
+	private String mPicBig;
+	private String mPicBigWithLogo;
+	private String mPicCover;
+	private String mPicSmall;
+	private String mPicSmallWithLogo;
 	private String mPicSquare;
+	private String mPicSquareWithLogo;
+	private String mPicWithLogo;
 	private String mQuotes;
 	private String mRelationshipStatus;
 	private String mReligion;
@@ -175,7 +183,15 @@ public class Profile implements User {
 		GraphObject data = Utils.getPropertyGraphObject(mGraphObject, Properties.PICTURE);
 		mPicture = Utils.getPropertyInsideProperty(data, "data", "url");
 
+		mPic = Utils.getPropertyString(mGraphObject, Properties.PIC);
+		mPicBig = Utils.getPropertyString(mGraphObject, Properties.PIC_BIG);
+		mPicBigWithLogo = Utils.getPropertyString(mGraphObject, Properties.PIC_BIG_WITH_LOGO);
+		mPicCover = Utils.getPropertyString(mGraphObject, Properties.PIC_COVER);
+		mPicSmall = Utils.getPropertyString(mGraphObject, Properties.PIC_SMALL);
+		mPicSmallWithLogo = Utils.getPropertyString(mGraphObject, Properties.PIC_SMALL_WITH_LOGO);
 		mPicSquare = Utils.getPropertyString(mGraphObject, Properties.PIC_SQUARE);
+		mPicSquareWithLogo = Utils.getPropertyString(mGraphObject, Properties.PIC_SQUARE_WITH_LOGO);
+		mPicWithLogo = Utils.getPropertyString(mGraphObject, Properties.PIC_WITH_LOGO);
 
 		// quotes
 		mQuotes = Utils.getPropertyString(mGraphObject, Properties.QUOTES);
@@ -579,8 +595,29 @@ public class Profile implements User {
 	 * @return The user's profile pic
 	 */
 	public String getPicture() {
-		if (!TextUtils.isEmpty(mPicSquare)) {
+		if (!TextUtils.isEmpty(mPicBig) && !"null".equals(mPicBig)) {
+			return mPicBig;
+		}
+		if (!TextUtils.isEmpty(mPic) && !"null".equals(mPic)) {
+			return mPic;
+		}
+		if (!TextUtils.isEmpty(mPicSmall) && !"null".equals(mPicSmall)) {
+			return mPicSmall;
+		}
+		if (!TextUtils.isEmpty(mPicSquare) && !"null".equals(mPicSquare)) {
 			return mPicSquare;
+		}
+		if (!TextUtils.isEmpty(mPicBigWithLogo) && !"null".equals(mPicBigWithLogo)) {
+			return mPicBigWithLogo;
+		}
+		if (!TextUtils.isEmpty(mPicWithLogo) && !"null".equals(mPicWithLogo)) {
+			return mPicWithLogo;
+		}
+		if (!TextUtils.isEmpty(mPicSmallWithLogo) && !"null".equals(mPicSmallWithLogo)) {
+			return mPicSmallWithLogo;
+		}
+		if (!TextUtils.isEmpty(mPicSquareWithLogo) && !"null".equals(mPicSquareWithLogo)) {
+			return mPicSquareWithLogo;
 		}
 		return mPicture;
 	}
@@ -1038,7 +1075,18 @@ public class Profile implements User {
 		 */
 		public static final String PICTURE = "picture";
 
+		/**
+		 * https://developers.facebook.com/docs/reference/fql/user
+		 */
+		public static final String PIC = "pic";
+		public static final String PIC_BIG = "pic_big";
+		public static final String PIC_BIG_WITH_LOGO = "pic_big_with_logo";
+		public static final String PIC_COVER = "pic_cover";
+		public static final String PIC_SMALL = "pic_small";
+		public static final String PIC_SMALL_WITH_LOGO = "pic_small_with_logo";
 		public static final String PIC_SQUARE = "pic_square";
+		public static final String PIC_SQUARE_WITH_LOGO = "pic_square_with_logo";
+		public static final String PIC_WITH_LOGO = "pic_with_logo";
 
 		/**
 		 * <b>Description:</b><br>

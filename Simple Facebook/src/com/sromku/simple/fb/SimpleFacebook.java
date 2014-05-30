@@ -46,6 +46,7 @@ import com.sromku.simple.fb.entities.Publishable;
 import com.sromku.simple.fb.entities.Score;
 import com.sromku.simple.fb.entities.Story;
 import com.sromku.simple.fb.entities.Video;
+import com.sromku.simple.fb.listeners.IOnLoginListener;
 import com.sromku.simple.fb.listeners.OnActionListener;
 import com.sromku.simple.fb.listeners.OnAlbumsListener;
 import com.sromku.simple.fb.listeners.OnAppRequestsListener;
@@ -171,6 +172,14 @@ public class SimpleFacebook {
 	 */
 	public void login(OnLoginListener onLoginListener) {
 		mSessionManager.login(onLoginListener);
+	}
+
+	public void addOnLoginListener(IOnLoginListener listener) {
+		mSessionManager.addOnLoginListener(listener);
+	}
+
+	public void removeOnLoginListener(IOnLoginListener listener) {
+		mSessionManager.removeOnLoginListener(listener);
 	}
 
 	/**

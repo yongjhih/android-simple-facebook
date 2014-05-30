@@ -31,7 +31,7 @@ public class SessionManager {
 	static SimpleFacebookConfiguration configuration;
 	private final SessionStatusCallback mSessionStatusCallback;
 	private UiLifecycleHelper uiLifecycleHelper;
-	static SimpleFacebook simpleFacebook;
+	private SimpleFacebook simpleFacebook;
 	private List<IOnLoginListener> onLoginListeners = new ArrayList<IOnLoginListener>();
 
 	private Callback mFacebookDialogCallback;
@@ -41,7 +41,7 @@ public class SessionManager {
 	}
 
 	public SessionManager(SimpleFacebook simpleFacebook, Activity activity, SimpleFacebookConfiguration configuration) {
-		SessionManager.simpleFacebook = simpleFacebook;
+		this.simpleFacebook = simpleFacebook;
 		SessionManager.activity = activity;
 		SessionManager.configuration = configuration;
 		mSessionStatusCallback = new SessionStatusCallback();

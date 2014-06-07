@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.facebook.AppEventsLogger;
 import com.facebook.Session;
 import com.sromku.simple.fb.actions.DeleteRequestAction;
+import com.sromku.simple.fb.actions.GetAccountsAction;
 import com.sromku.simple.fb.actions.GetAction;
 import com.sromku.simple.fb.actions.GetAlbumsAction;
 import com.sromku.simple.fb.actions.GetAppFriendsAction;
@@ -17,10 +18,13 @@ import com.sromku.simple.fb.actions.GetAppRequestsAction;
 import com.sromku.simple.fb.actions.GetCheckinsAction;
 import com.sromku.simple.fb.actions.GetCommentsAction;
 import com.sromku.simple.fb.actions.GetEventsAction;
+import com.sromku.simple.fb.actions.GetFamilyAction;
 import com.sromku.simple.fb.actions.GetFriendsAction;
 import com.sromku.simple.fb.actions.GetGroupsAction;
 import com.sromku.simple.fb.actions.GetLikesAction;
+import com.sromku.simple.fb.actions.GetNotificationsAction;
 import com.sromku.simple.fb.actions.GetPageAction;
+import com.sromku.simple.fb.actions.GetPagesAction;
 import com.sromku.simple.fb.actions.GetPhotosAction;
 import com.sromku.simple.fb.actions.GetPostsAction;
 import com.sromku.simple.fb.actions.GetProfileAction;
@@ -47,6 +51,7 @@ import com.sromku.simple.fb.entities.Score;
 import com.sromku.simple.fb.entities.Story;
 import com.sromku.simple.fb.entities.Video;
 import com.sromku.simple.fb.listeners.IOnLoginListener;
+import com.sromku.simple.fb.listeners.OnAccountsListener;
 import com.sromku.simple.fb.listeners.OnActionListener;
 import com.sromku.simple.fb.listeners.OnAlbumsListener;
 import com.sromku.simple.fb.listeners.OnAppRequestsListener;
@@ -54,6 +59,7 @@ import com.sromku.simple.fb.listeners.OnCheckinsListener;
 import com.sromku.simple.fb.listeners.OnCommentsListener;
 import com.sromku.simple.fb.listeners.OnDeleteListener;
 import com.sromku.simple.fb.listeners.OnEventsListener;
+import com.sromku.simple.fb.listeners.OnFamilyListener;
 import com.sromku.simple.fb.listeners.OnFriendsListener;
 import com.sromku.simple.fb.listeners.OnGroupsListener;
 import com.sromku.simple.fb.listeners.OnInviteListener;
@@ -61,13 +67,16 @@ import com.sromku.simple.fb.listeners.OnLikesListener;
 import com.sromku.simple.fb.listeners.OnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnNewPermissionsListener;
+import com.sromku.simple.fb.listeners.OnNotificationsListener;
 import com.sromku.simple.fb.listeners.OnPageListener;
+import com.sromku.simple.fb.listeners.OnPagesListener;
 import com.sromku.simple.fb.listeners.OnPhotosListener;
 import com.sromku.simple.fb.listeners.OnPostsListener;
 import com.sromku.simple.fb.listeners.OnProfileListener;
 import com.sromku.simple.fb.listeners.OnPublishListener;
 import com.sromku.simple.fb.listeners.OnScoresListener;
 import com.sromku.simple.fb.listeners.OnVideosListener;
+import com.sromku.simple.fb.utils.GraphPath;
 
 /**
  * Simple Facebook SDK which wraps original Facebook SDK
@@ -227,6 +236,17 @@ public class SimpleFacebook {
 	}
 
 	/**
+	 * The pages of which the current user is an admin.
+	 * 
+	 * @param onAccountsListener
+	 */
+	public void getAccounts(OnAccountsListener onAccountsListener) {
+		GetAccountsAction getAccountsAction = new GetAccountsAction(mSessionManager);
+		getAccountsAction.setActionListener(onAccountsListener);
+		getAccountsAction.execute();
+	}
+
+	/**
 	 * Get my albums.<br>
 	 * <br>
 	 * 
@@ -278,6 +298,103 @@ public class SimpleFacebook {
 		GetAppRequestsAction getAppRequestsAction = new GetAppRequestsAction(mSessionManager);
 		getAppRequestsAction.setActionListener(onAppRequestsListener);
 		getAppRequestsAction.execute();
+	}
+
+	/**
+	 * Get my books. The response as you can notice is a Page because everything
+	 * in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getBooks(OnPagesListener onPagesListener) {
+		getBooks(null, null, onPagesListener);
+	}
+
+	/**
+	 * Get my books and set the properties you need. The response as you can
+	 * notice is a Page because everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getBooks(Page.Properties properties, OnPagesListener onPagesListener) {
+		getBooks(null, properties, onPagesListener);
+	}
+
+	/**
+	 * Get books of entity. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getBooks(String entityId, OnPagesListener onPagesListener) {
+		getBooks(entityId, null, onPagesListener);
+	}
+
+	/**
+	 * Get books of entity and set properties that you need. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getBooks(String entityId, Page.Properties properties, OnPagesListener onPagesListener) {
+		GetPagesAction getPagesAction = new GetPagesAction(mSessionManager);
+		getPagesAction.setActionListener(onPagesListener);
+		getPagesAction.setProperties(properties);
+		getPagesAction.setTarget(entityId);
+		getPagesAction.setEdge(GraphPath.BOOKS);
+		getPagesAction.execute();
 	}
 
 	/**
@@ -406,7 +523,51 @@ public class SimpleFacebook {
 	}
 
 	/**
-	 * Get my friends from facebook.<br>
+	 * Get person's family relationships.<br>
+	 * <br>
+	 * The result will be id + name of other user and the relationship between
+	 * you two. For example: wife, brother, mother,.. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_RELATIONSHIPS}<br>
+	 * 
+	 * @param onFamilyListener
+	 */
+	public void getFamily(OnFamilyListener onFamilyListener) {
+		GetFamilyAction getFamilyAction = new GetFamilyAction(mSessionManager);
+		getFamilyAction.setActionListener(onFamilyListener);
+		getFamilyAction.execute();
+	}
+
+	/**
+	 * Get family relationships of entity.<br>
+	 * <br>
+	 * The entity can be only:<br>
+	 * - <b>Profile</b>. It can be you, your friend or any other profile. To get
+	 * id of the profile: {@link Profile#getId()}<br>
+	 * <br>
+	 * 
+	 * The result will be id + name of other user and the relationship between
+	 * you two. For example: wife, brother, mother,.. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_RELATIONSHIPS}<br>
+	 * {@link Permission#FRIENDS_RELATIONSHIPS}<br>
+	 * 
+	 * @param entityId
+	 * @param onFamilyListener
+	 */
+	public void getFamily(String entityId, OnFamilyListener onFamilyListener) {
+		GetFamilyAction getFamilyAction = new GetFamilyAction(mSessionManager);
+		getFamilyAction.setActionListener(onFamilyListener);
+		getFamilyAction.setTarget(entityId);
+		getFamilyAction.execute();
+	}
+
+	/**
+	 * Get person's friends from facebook.<br>
 	 * This method will return profile with next default properties depends on
 	 * permissions you have: <b><em>id, name</em></b><br>
 	 * <br>
@@ -460,6 +621,103 @@ public class SimpleFacebook {
 		getFriendsAction.setProperties(properties);
 		getFriendsAction.setActionListener(onFriendsListener);
 		getFriendsAction.execute();
+	}
+
+	/**
+	 * Get my games. The response as you can notice is a Page because everything
+	 * in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getGames(OnPagesListener onPagesListener) {
+		getGames(null, null, onPagesListener);
+	}
+
+	/**
+	 * Get my games and set the properties you need. The response as you can
+	 * notice is a Page because everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getGames(Page.Properties properties, OnPagesListener onPagesListener) {
+		getGames(null, properties, onPagesListener);
+	}
+
+	/**
+	 * Get games of entity. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getGames(String entityId, OnPagesListener onPagesListener) {
+		getGames(entityId, null, onPagesListener);
+	}
+
+	/**
+	 * Get games that entity like and set properties that you need. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getGames(String entityId, Page.Properties properties, OnPagesListener onPagesListener) {
+		GetPagesAction getPagesAction = new GetPagesAction(mSessionManager);
+		getPagesAction.setActionListener(onPagesListener);
+		getPagesAction.setProperties(properties);
+		getPagesAction.setTarget(entityId);
+		getPagesAction.setEdge(GraphPath.GAMES);
+		getPagesAction.execute();
 	}
 
 	/**
@@ -536,6 +794,218 @@ public class SimpleFacebook {
 	}
 
 	/**
+	 * Get my movies. The response as you can notice is a Page because
+	 * everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMovies(OnPagesListener onPagesListener) {
+		getMovies(null, null, onPagesListener);
+	}
+
+	/**
+	 * Get my movies and set the properties you need. The response as you can
+	 * notice is a Page because everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMovies(Page.Properties properties, OnPagesListener onPagesListener) {
+		getMovies(null, properties, onPagesListener);
+	}
+
+	/**
+	 * Get movies of entity. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMovies(String entityId, OnPagesListener onPagesListener) {
+		getMovies(entityId, null, onPagesListener);
+	}
+
+	/**
+	 * Get movies that entity like and set properties that you need. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMovies(String entityId, Page.Properties properties, OnPagesListener onPagesListener) {
+		GetPagesAction getPagesAction = new GetPagesAction(mSessionManager);
+		getPagesAction.setActionListener(onPagesListener);
+		getPagesAction.setProperties(properties);
+		getPagesAction.setTarget(entityId);
+		getPagesAction.setEdge(GraphPath.MOVIES);
+		getPagesAction.execute();
+	}
+
+	/**
+	 * Get my music. The response as you can notice is a Page because everything
+	 * in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMusic(OnPagesListener onPagesListener) {
+		getMusic(null, null, onPagesListener);
+	}
+
+	/**
+	 * Get my music and set the properties you need. The response as you can
+	 * notice is a Page because everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMusic(Page.Properties properties, OnPagesListener onPagesListener) {
+		getMusic(null, properties, onPagesListener);
+	}
+
+	/**
+	 * Get music of entity. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMusic(String entityId, OnPagesListener onPagesListener) {
+		getMusic(entityId, null, onPagesListener);
+	}
+
+	/**
+	 * Get musics that entity like and set properties that you need. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPageListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/music/
+	 */
+	public void getMusic(String entityId, Page.Properties properties, OnPagesListener onPagesListener) {
+		GetPagesAction getPageAction = new GetPagesAction(mSessionManager);
+		getPageAction.setActionListener(onPagesListener);
+		getPageAction.setProperties(properties);
+		getPageAction.setTarget(entityId);
+		getPageAction.setEdge(GraphPath.MUSIC);
+		getPageAction.execute();
+	}
+
+	/**
+	 * Get unread Facebook notifications that a person has.<br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#MANAGE_NOTIFICATIONS}<br>
+	 * 
+	 * @param onNotificationsListener
+	 *            The callback listener
+	 * @see https://developers.facebook.com/docs/graph-api/reference/v1.0/user/
+	 *      notifications
+	 */
+	public void getNotifications(OnNotificationsListener onNotificationsListener) {
+		GetNotificationsAction getNotificationsAction = new GetNotificationsAction(mSessionManager);
+		getNotificationsAction.setActionListener(onNotificationsListener);
+		getNotificationsAction.execute();
+	}
+
+	/**
 	 * Get page by page id.
 	 * 
 	 * @param entityId
@@ -566,6 +1036,19 @@ public class SimpleFacebook {
 		getPageAction.setTarget(entityId);
 		getPageAction.setProperties(properties);
 		getPageAction.execute();
+	}
+	
+	/**
+	 * Get pages that user liked
+	 * 
+	 * @param onPagesListener
+	 *            The callback listener.
+	 */
+	public void getPages(OnPagesListener onPagesListener) {
+		GetPagesAction getPagesAction = new GetPagesAction(mSessionManager);
+		getPagesAction.setActionListener(onPagesListener);
+		getPagesAction.setEdge(GraphPath.LIKES);
+		getPagesAction.execute();
 	}
 
 	/**
@@ -633,7 +1116,21 @@ public class SimpleFacebook {
 	 *            The callback listener.
 	 */
 	public void getProfile(OnProfileListener onProfileListener) {
-		getProfile(null, onProfileListener);
+		getProfile(null, null, onProfileListener);
+	}
+
+	/**
+	 * Get profile by profile id. <br>
+	 * The default values only will be returned. For more options, see
+	 * {@link #getProfile(String, Properties, OnProfileListener)}
+	 * 
+	 * @param profileId
+	 *            The id of the profile we want to get
+	 * @param onProfileListener
+	 *            The callback listener.
+	 */
+	public void getProfile(String profileId, OnProfileListener onProfileListener) {
+		getProfile(profileId, null, onProfileListener);
 	}
 
 	/**
@@ -658,8 +1155,35 @@ public class SimpleFacebook {
 	 * </pre>
 	 */
 	public void getProfile(Profile.Properties properties, OnProfileListener onProfileListener) {
+		getProfile(null, properties, onProfileListener);
+	}
+
+	/**
+	 * Get profile by profile id and mentioning specific parameters. <br>
+	 * 
+	 * @param profileId
+	 *            The id of the profile we want to get
+	 * @param onProfileListener
+	 *            The callback listener.
+	 * @param properties
+	 *            The {@link Properties}. <br>
+	 *            To create {@link Properties} instance use:
+	 * 
+	 *            <pre>
+	 * // define the profile picture we want to get
+	 * PictureAttributes pictureAttributes = Attributes.createPictureAttributes();
+	 * pictureAttributes.setType(PictureType.SQUARE);
+	 * pictureAttributes.setHeight(500);
+	 * pictureAttributes.setWidth(500);
+	 * 
+	 * // create properties
+	 * Properties properties = new Properties.Builder().add(Properties.ID).add(Properties.FIRST_NAME).add(Properties.PICTURE, attributes).build();
+	 * </pre>
+	 */
+	public void getProfile(String profileId, Profile.Properties properties, OnProfileListener onProfileListener) {
 		GetProfileAction getProfileAction = new GetProfileAction(mSessionManager);
 		getProfileAction.setProperties(properties);
+		getProfileAction.setTarget(profileId);
 		getProfileAction.setActionListener(onProfileListener);
 		getProfileAction.execute();
 	}
@@ -680,6 +1204,30 @@ public class SimpleFacebook {
 	public void getPosts(OnPostsListener onPostsListener) {
 		GetPostsAction getPostsAction = new GetPostsAction(mSessionManager);
 		getPostsAction.setActionListener(onPostsListener);
+		getPostsAction.execute();
+	}
+
+	/**
+	 * Get my posts filtered by {@link PostType}.<br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * No special permissions are needed for getting the public posts. If you
+	 * want to get more private posts, then you need
+	 * {@link Permission#READ_STREAM}<br>
+	 * <br>
+	 * 
+	 * @param entityId
+	 *            Event, Group, Page, Profile
+	 * @param postType
+	 *            Filter all wall feeds and get posts that you need.
+	 * @param onPostsListener
+	 *            The callback listener.
+	 */
+	public void getPosts(PostType postType, OnPostsListener onPostsListener) {
+		GetPostsAction getPostsAction = new GetPostsAction(mSessionManager);
+		getPostsAction.setActionListener(onPostsListener);
+		getPostsAction.setPostType(postType);
 		getPostsAction.execute();
 	}
 
@@ -775,6 +1323,103 @@ public class SimpleFacebook {
 		getScoresAction.setActionListener(onScoresListener);
 		getScoresAction.execute();
 	}
+	
+	/**
+	 * Get my TV shows. The response as you can notice is a Page because
+	 * everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getTelevision(OnPagesListener onPagesListener) {
+		getTelevision(null, null, onPagesListener);
+	}
+
+	/**
+	 * Get my TV shows and set the properties you need. The response as you can
+	 * notice is a Page because everything in facebook has the model of Page.<br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes'
+	 * permission is needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getTelevision(Page.Properties properties, OnPagesListener onPagesListener) {
+		getTelevision(null, properties, onPagesListener);
+	}
+
+	/**
+	 * Get TV shows of entity. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getTelevision(String entityId, OnPagesListener onPagesListener) {
+		getTelevision(entityId, null, onPagesListener);
+	}
+
+	/**
+	 * Get TV shows of entity and set properties that you need. <br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * In most cases this information is public and thus can be retrieved
+	 * without permissions, but if user added privacy, then 'user_likes' or/and
+	 * 'friends_likes' permissions are needed. <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_LIKES}<br>
+	 * {@link Permission#FRIENDS_LIKES}<br>
+	 * 
+	 * @param onPagesListener
+	 * <br>
+	 * <br>
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/books/
+	 */
+	public void getTelevision(String entityId, Page.Properties properties, OnPagesListener onPagesListener) {
+		GetPagesAction getPagesAction = new GetPagesAction(mSessionManager);
+		getPagesAction.setActionListener(onPagesListener);
+		getPagesAction.setProperties(properties);
+		getPagesAction.setTarget(entityId);
+		getPagesAction.setEdge(GraphPath.TELEVISION);
+		getPagesAction.execute();
+	}
 
 	/**
 	 * Get my videos.<br>
@@ -835,7 +1480,47 @@ public class SimpleFacebook {
 	 * @see https://developers.facebook.com/docs/games/scores/
 	 */
 	public void publish(Score score, OnPublishListener onPublishListener) {
-		publish((Publishable) score, "me", onPublishListener);
+		publish("me", (Publishable) score, onPublishListener);
+	}
+
+	/**
+	 * 
+	 * Publish {@link Feed} on the wall of entity.<br>
+	 * <br>
+	 * The entity can be one of:<br>
+	 * - <b>Group</b>. Any public group. To get the group id:
+	 * {@link Group#getId()}<br>
+	 * - <b>Event</b>. Any public event. To get the event id:
+	 * {@link Event#getId()}<br>
+	 * - <b>Page</b>. Any page that allowed publishing on their timeline. To get
+	 * page id: {@link Page#getId()} <br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#PUBLISH_ACTION}
+	 * 
+	 * <br>
+	 * <br>
+	 * <b>Notes:</b><br>
+	 * - Publishing on friend's wall is <b>no more</b> possible. This option was
+	 * disabled by Facebook.<br>
+	 * - If the user is admin of page. And you try to publish a feed on this
+	 * page. Then you will have to ask for {@link Permission#MANAGE_PAGES}
+	 * permission in addition to {@link Permission#PUBLISH_ACTION}.<br>
+	 * 
+	 * @param entityId
+	 *            Group, Event, Page
+	 * @param feed
+	 *            The feed to publish. Use {@link Feed.Builder} to create a new
+	 *            <code>Feed</code>
+	 * @param onPublishListener
+	 *            The listener for publishing action
+	 * @see https
+	 *      ://developers.facebook.com/docs/howtos/androidsdk/3.0/publish-to
+	 *      -feed/
+	 */
+	public void publish(String entityId, Feed feed, OnPublishListener onPublishListener) {
+		publish(entityId, (Publishable) feed, onPublishListener);
 	}
 
 	/**
@@ -856,7 +1541,7 @@ public class SimpleFacebook {
 	 *      -feed/
 	 */
 	public void publish(Feed feed, OnPublishListener onPublishListener) {
-		publish((Publishable) feed, "me", onPublishListener);
+		publish("me", (Publishable) feed, onPublishListener);
 	}
 
 	/**
@@ -895,8 +1580,7 @@ public class SimpleFacebook {
 		if (!withDialog) {
 			// make it silently
 			publish(feed, onPublishListener);
-		}
-		else {
+		} else {
 			PublishFeedDialogAction publishFeedDialogAction = new PublishFeedDialogAction(mSessionManager);
 			publishFeedDialogAction.setFeed(feed);
 			publishFeedDialogAction.setOnPublishListener(onPublishListener);
@@ -915,7 +1599,7 @@ public class SimpleFacebook {
 	 * @param onPublishListener
 	 */
 	public void publish(Story story, OnPublishListener onPublishListener) {
-		publish((Publishable) story, "me", onPublishListener);
+		publish("me", (Publishable) story, onPublishListener);
 	}
 
 	/**
@@ -944,7 +1628,7 @@ public class SimpleFacebook {
 	 *            The callback listener
 	 */
 	public void publish(Photo photo, String albumId, OnPublishListener onPublishListener) {
-		publish((Publishable) photo, albumId, onPublishListener);
+		publish(albumId, (Publishable) photo, onPublishListener);
 	}
 
 	/**
@@ -966,7 +1650,7 @@ public class SimpleFacebook {
 	 *            The callback listener
 	 */
 	public void publish(Photo photo, OnPublishListener onPublishListener) {
-		publish((Publishable) photo, "me", onPublishListener);
+		publish("me", (Publishable) photo, onPublishListener);
 	}
 
 	/**
@@ -982,19 +1666,20 @@ public class SimpleFacebook {
 	 *            The callback listener
 	 */
 	public void publish(Video video, OnPublishListener onPublishListener) {
-		publish((Publishable) video, "me", onPublishListener);
+		publish("me", (Publishable) video, onPublishListener);
 	}
 
 	/**
-	 * Publish any publishable entity
+	 * Publish any publishable entity to target (entity)
 	 * 
+	 * @param entityId
 	 * @param publishable
 	 * @param onPublishListener
 	 */
-	public void publish(Publishable publishable, String target, OnPublishListener onPublishListener) {
+	public void publish(String entityId, Publishable publishable, OnPublishListener onPublishListener) {
 		PublishAction publishAction = new PublishAction(mSessionManager);
 		publishAction.setPublishable(publishable);
-		publishAction.setTarget(target);
+		publishAction.setTarget(entityId);
 		publishAction.setOnPublishListener(onPublishListener);
 		publishAction.execute();
 	}

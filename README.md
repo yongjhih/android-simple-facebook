@@ -1,7 +1,8 @@
 android-simple-facebook
 =======================
 
-Simple Facebook SDK for Android which wraps original [**Facebook SDK 3.8**](https://github.com/facebook/facebook-android-sdk)
+Simple Facebook SDK for Android which wraps original [**Facebook SDK 3.14**](https://github.com/facebook/facebook-android-sdk). <br>
+For support of older versions of facebook **SDK 3.8** and below, go to [v1.0](https://github.com/sromku/android-simple-facebook/tree/v1.0) branch.
 
 This is a library project which makes the life much easier by coding less code for being able to login, publish feeds and open graph stories, invite friends and more. 
 
@@ -9,11 +10,16 @@ Since my feeling was that the usage of Facebook SDK was too complicated for simp
 
 We have new <img src="http://stackoverflow.com/content/stackoverflow/img/apple-touch-icon.png" height="24" width="24"/> Stack overflow **tag**: [`android-simple-facebook`](http://stackoverflow.com/tags/android-simple-facebook/info)
 
-Sample app:<br> 
-<a href="https://play.google.com/store/apps/details?id=com.sromku.simple.fb.example">
-  <img alt="Get it on Google Play"
-       src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
-</a>
+## Releases
+Library jar | Branch | Supported Facebook SDK
+------------|--------|------------------------
+[simple-facebook-2.0.jar](https://github.com/sromku/android-simple-facebook/releases/download/2.0/simple-facebook-2.0.jar) | [master](https://github.com/sromku/android-simple-facebook) | 3.14 > 
+[simple-facebook-1.2.jar](https://github.com/sromku/android-simple-facebook/releases/download/1.2/simple.facebook.jar) | [v1.0](https://github.com/sromku/android-simple-facebook/tree/v1.0) | 3.0 - 3.8
+
+## Sample App
+The sample app includes examples for all actions. Check out this very short [wiki page](https://github.com/sromku/android-simple-facebook/wiki/Sample-App) of how to run and setup the sample app.
+
+<img src="https://raw.githubusercontent.com/sromku/android-simple-facebook/master/Refs/sample-app.png" width="600"/>
 
 ## Features
 * [Login](#login)
@@ -29,18 +35,27 @@ Sample app:<br>
 	* [Invite one friend](#one-friend-only)
 	* [Delete invite/request](#delete-requestinvite)
 * [Get](#get-my-profile)
-	* [Profile](#get-my-profile)
-	* [Friends](#get-friends)
+	* [Account](#get-accounts)
 	* [Albums](#get-albums)
+	* [App Requests](#get-app-requests)
+	* [Books](#get-books)
 	* [Checkins](#get-checkins)
 	* [Comments](#get-comments)
 	* [Events](#get-events)
+	* [Family](#get-family)
+	* [Friends](#get-friends)
+	* [Games](#get-games)
 	* [Groups](#get-groups)
 	* [Likes](#get-likes)
+	* [Movies](#get-movies)
+	* [Music](#get-music)
+	* [Notifications](#get-notifications)
 	* [Page](#get-page)
 	* [Photos](#get-photos)
 	* [Posts](#get-posts)
+	* [Profile](#get-my-profile)
 	* [Scores](#get-scores)
+	* [Television](#get-television)
 	* [Videos](#get-videos)
 * [Additional options](#additional-options)
 	* [Pagination](#pagination)
@@ -55,14 +70,14 @@ Sample app:<br>
 	* [Debug](#debug)
 
 *And,*
-* Based on latest Facebook SDK
+* Based on Facebook SDK 3.14
 * Permission strings are predefined
 * No need to use `LoginButton` view for being able to login/logout. You can use any `View`.
 * No need to care for correct login with `READ` and `PUBLISH` permissions. Just mention the permissions you need and this library will care for the rest.
 
 
 ## Setup Project
-1. Clone [Facebook SDK 3.8](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
+1. Clone [Facebook SDK 3.14](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
 
 2. Clone and import this (Simple Facebook) project to your workspace.
  
@@ -478,90 +493,15 @@ String requestId = ...;
 mSimpleFacebook.deleteRequest(requestId, onDeleteListener);
 ```
 
-### Get my profile
-
-Facebook doesn't reveal all user fields by default. For example, if you need picture, then you need to specify it in your graph api request. 
-I can understand this, since getting all possible user fields will be time consuming task and this is not what we want.<br>
-Thus, **two** options are possible to get profile data.
-
-#### Default
-By using this way, you can get many properties like: *id*, *name*, *education* and more. Just ensure to have needed permissions. Read the javadoc to know what is needed.
-But, here you won't be able to get several properties like: *cover*, *picture* and other. 
+### Get accounts
+Get pages of which the current user is an admin.
 
 Initialize callback listener:
 ``` java
-OnProfileListener onProfileListener = new OnProfileListener() {			
+OnAccountsListener onAccountsListener = new OnAccountsListener() {			
 	@Override
-	public void onComplete(Profile profile) {
-		Log.i(TAG, "My profile id = " + profile.getId());
-	}
-
-	/* 
-	 * You can override other methods here: 
-	 * onThinking(), onFail(String reason), onException(Throwable throwable)
-	 */		
-};
-```
-
-Get the profile:
-``` java
-mSimpleFacebook.getProfile(onProfileListener);
-```
-
-#### Be specific and get what you need
-By using this option, you define the properties you need, and you will get only them. Here, any property is possible to get.
-
-Prepare the properties that you need:
-``` java
-Profile.Properties properties = new Profile.Properties.Builder()
-	.add(Properties.ID)
-	.add(Properties.FIRST_NAME)
-	.add(Properties.COVER)
-	.add(Properties.WORK)
-	.add(Properties.EDUCATION)
-	.add(Properties.PICTURE)
-	.build();
-``` 
-
-Get the profile:
-``` java			
-mSimpleFacebook.getProfile(properties, onProfileListener);
-```
-
-#### Be even more specific - Picture Attributes
-You can describe the picture you really need like: *`small`, `normal`, `large`, `square`* and set width and height.
-
-Prepare specific picture that you need:
-``` java
-PictureAttributes pictureAttributes = Attributes.createPictureAttributes();
-pictureAttributes.setHeight(500);
-pictureAttributes.setWidth(500);
-pictureAttributes.setType(PictureType.SQUARE);
-```
-
-Prepare the properties that you need:
-``` java
-Profile.Properties properties = new Profile.Properties.Builder()
-	.add(Properties.ID)
-	.add(Properties.FIRST_NAME)
-	.add(Properties.PICTURE, pictureAttributes)
-	.build();			
-```
-
-Get the profile:
-``` java
-mSimpleFacebook.getProfile(properties, onProfileListener);
-```
-
-
-### Get friends
-
-Initialize callback listener:
-``` java
-OnFriendsListener onFriendsListener = new OnFriendsListener() {			
-	@Override
-	public void onComplete(List<Profile> friends) {
-		Log.i(TAG, "Number of friends = " + friends.size());
+	public void onComplete(List<Account> accounts) {
+		Log.i(TAG, "Number of accounts = " + accounts.size());
 	}
 
 	/* 
@@ -571,9 +511,9 @@ OnFriendsListener onFriendsListener = new OnFriendsListener() {
 };
 ```
 
-Get my friends:
+Get my accounts:
 ``` java
-mSimpleFacebook.getFriends(onFriendsListener);
+mSimpleFacebook.getAccounts(onAccountsListener);
 ```
 
 ### Get albums
@@ -605,6 +545,12 @@ Get album of next entities by passing entity id:
 String entityId = ...;
 mSimpleFacebook.getAlbums(entityId, onAlbumsListener);
 ```
+
+### Get app requests
+[The code exists, just need TO DOC]
+
+### Get books
+[The code exists, just need TO DOC]
 
 ### Get checkins
 
@@ -696,6 +642,34 @@ String entityId = ...;
 mSimpleFacebook.getEvents(entityId, EventDecision.ATTENDING, onEventsListener);
 ```
 
+### Get family
+[The code exists, just need TO DOC]
+
+### Get friends
+
+Initialize callback listener:
+``` java
+OnFriendsListener onFriendsListener = new OnFriendsListener() {			
+	@Override
+	public void onComplete(List<Profile> friends) {
+		Log.i(TAG, "Number of friends = " + friends.size());
+	}
+
+	/* 
+	 * You can override other methods here: 
+	 * onThinking(), onFail(String reason), onException(Throwable throwable)
+	 */			
+};
+```
+
+Get my friends:
+``` java
+mSimpleFacebook.getFriends(onFriendsListener);
+```
+
+### Get games
+[The code exists, just need TO DOC]
+
 ### Get groups
 
 Initialize callback listener:
@@ -753,6 +727,15 @@ Get likes of next entities by passing entity id:
 String entityId = ...;
 mSimpleFacebook.getLikes(entityId, onLikesListener);
 ```
+
+### Get movies
+[The code exists, just need TO DOC]
+
+### Get music
+[The code exists, just need TO DOC]
+
+### Get notifications
+[The code exists, just need TO DOC]
 
 ### Get page
 
@@ -869,6 +852,81 @@ String entityId = ...;
 mSimpleFacebook.getPosts(entityId, PostType.STATUSES, onPostsListener);
 ```
 
+### Get my profile
+
+Facebook doesn't reveal all user fields by default. For example, if you need picture, then you need to specify it in your graph api request. 
+I can understand this, since getting all possible user fields will be time consuming task and this is not what we want.<br>
+Thus, **two** options are possible to get profile data.
+
+#### Default
+By using this way, you can get many properties like: *id*, *name*, *education* and more. Just ensure to have needed permissions. Read the javadoc to know what is needed.
+But, here you won't be able to get several properties like: *cover*, *picture* and other. 
+
+Initialize callback listener:
+``` java
+OnProfileListener onProfileListener = new OnProfileListener() {			
+	@Override
+	public void onComplete(Profile profile) {
+		Log.i(TAG, "My profile id = " + profile.getId());
+	}
+
+	/* 
+	 * You can override other methods here: 
+	 * onThinking(), onFail(String reason), onException(Throwable throwable)
+	 */		
+};
+```
+
+Get the profile:
+``` java
+mSimpleFacebook.getProfile(onProfileListener);
+```
+
+#### Be specific and get what you need
+By using this option, you define the properties you need, and you will get only them. Here, any property is possible to get.
+
+Prepare the properties that you need:
+``` java
+Profile.Properties properties = new Profile.Properties.Builder()
+	.add(Properties.ID)
+	.add(Properties.FIRST_NAME)
+	.add(Properties.COVER)
+	.add(Properties.WORK)
+	.add(Properties.EDUCATION)
+	.add(Properties.PICTURE)
+	.build();
+``` 
+
+Get the profile:
+``` java			
+mSimpleFacebook.getProfile(properties, onProfileListener);
+```
+
+#### Be even more specific - Picture Attributes
+You can describe the picture you really need like: *`small`, `normal`, `large`, `square`* and set width and height.
+
+Prepare specific picture that you need:
+``` java
+PictureAttributes pictureAttributes = Attributes.createPictureAttributes();
+pictureAttributes.setHeight(500);
+pictureAttributes.setWidth(500);
+pictureAttributes.setType(PictureType.SQUARE);
+```
+
+Prepare the properties that you need:
+``` java
+Profile.Properties properties = new Profile.Properties.Builder()
+	.add(Properties.ID)
+	.add(Properties.FIRST_NAME)
+	.add(Properties.PICTURE, pictureAttributes)
+	.build();			
+```
+
+Get the profile:
+``` java
+mSimpleFacebook.getProfile(properties, onProfileListener);
+```
+
 ### Get scores
 
 Initialize callback listener:
@@ -890,6 +948,9 @@ Get my scores:
 ``` java
 mSimpleFacebook.getScores(onScoresListener); 
 ```
+
+### Get television
+[The code exists, just need TO DOC]
 
 ### Get videos
 
@@ -1069,7 +1130,7 @@ Initialize callback listener:
 OnNewPermissionsListener onNewPermissionsListener = new OnNewPermissionsListener() {
 
 	@Override
-	publicvoid onSuccess(String accessToken) {
+	public void onSuccess(String accessToken) {
 		// updated access token 
 	}
 
@@ -1130,18 +1191,16 @@ Print logs with full stacktrace to logcat:
 Set `Logger.DEBUG_WITH_STACKTRACE` to `true` 
 
 
-## Sample application
-<a href="https://play.google.com/store/apps/details?id=com.sromku.simple.fb.example">
-  <img alt="Get it on Google Play"
-       src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
-</a>
-
 ## Applications using the library
 
-| [Pregnancy Tickers - Widget](https://play.google.com/store/apps/details?id=com.romkuapps.tickers) | [Pregnancy Calculator](https://play.google.com/store/apps/details?id=com.romkuapps.enfree.duedate) | [Ring Drop : Fun Ring Toss Game](https://play.google.com/store/apps/details?id=com.aitrich.ringdrop) | [Fun Call](https://play.google.com/store/apps/details?id=com.rami_bar.fun_call) | [8tracks Radio](https://play.google.com/store/apps/details?id=com.e8tracks) | [Violet Glasses](https://play.google.com/store/apps/developer?id=Violet+Glasses) | [Dough Pro - Artisan Baking](https://play.google.com/store/apps/details?id=com.ollygrov.doughpro) | [Mental Arithmetic](https://play.google.com/store/apps/details?id=nintenda.calculmental) | [Pemex Checker](https://play.google.com/store/apps/details?id=com.xoco.pemex.checker) | [Ayuda Alguien](https://play.google.com/store/apps/details?id=com.xoco.ayuda) 
+| [Pregnancy Tickers - Widget](https://play.google.com/store/apps/details?id=com.romkuapps.tickers) | [Pregnancy Calculator](https://play.google.com/store/apps/details?id=com.romkuapps.enfree.duedate) | [Ring Drop : Fun Ring Toss Game](https://play.google.com/store/apps/details?id=com.aitrich.ringdrop) | [Fun Call](https://play.google.com/store/apps/details?id=com.rami_bar.fun_call) | [8tracks Radio](https://play.google.com/store/apps/details?id=com.e8tracks) | [Violet Glasses](https://play.google.com/store/apps/developer?id=Violet+Glasses) | [Dough Pro - Artisan Baking](https://play.google.com/store/apps/details?id=com.ollygrov.doughpro) | [Mental Arithmetic](https://play.google.com/store/apps/details?id=nintenda.calculmental) | [Pemex Checker](https://play.google.com/store/apps/details?id=com.xoco.pemex.checker) | [Ayuda Alguien](https://play.google.com/store/apps/details?id=com.xoco.ayuda) | [Buga's Dream](https://play.google.com/store/apps/details?id=com.hectechlabs.bugasdream)
 | and more...<br>
 
 > If you use this library in your project and you found it helpful, it will be really great to share it here :) 
+
+## Donate
+Just in case :)<br>
+<a href='https://pledgie.com/campaigns/25567'><img alt='Click here to lend your support to: Open source projects and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/25567.png?skin_name=chrome' border='0' ></a>
 
 ## License
 
@@ -1158,5 +1217,4 @@ Set `Logger.DEBUG_WITH_STACKTRACE` to `true`
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
 

@@ -843,4 +843,49 @@ public class Page {
 			}
 		}
 	}
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("\"getId\": " + getId() + ", \n");
+            builder.append("\"getAbout\": " + getAbout() + ", \n");
+            builder.append("\"getAttire\": " + getAttire() + ", \n");
+            builder.append("\"getBandMembers\": " + getBandMembers() + ", \n");
+            builder.append("\"getBirthday\": " + getBirthday() + ", \n");
+            builder.append("\"getBookingAgent\": " + getBookingAgent() + ", \n");
+            builder.append("\"canPost\": " + canPost() + ", \n");
+            builder.append("\"getCategory\": " + getCategory() + ", \n");
+            builder.append("\"getCreatedTime\": " + getCreatedTime() + ", \n");
+            builder.append("\"getNumCheckins\": " + getNumCheckins() + ", \n");
+            builder.append("\"getCompanyOverview\": " + getCompanyOverview() + ", \n");
+            builder.append("\"getCover\": " + getCover() + ", \n");
+            builder.append("\"getCurrentLocation\": " + getCurrentLocation() + ", \n");
+            builder.append("\"getDescription\": " + getDescription() + ", \n");
+            builder.append("\"getDirectedBy\": " + getDirectedBy() + ", \n");
+            builder.append("\"getFounded\": " + getFounded() + ", \n");
+            builder.append("\"getGeneralInfo\": " + getGeneralInfo() + ", \n");
+            builder.append("\"getGeneralManager\": " + getGeneralManager() + ", \n");
+            builder.append("\"getHometown\": " + getHometown() + ", \n");
+            builder.append("\"isPermanentlyClosed\": " + isPermanentlyClosed() + ", \n");
+            builder.append("\"isPublished\": " + isPublished() + ", \n");
+            builder.append("\"isUnclaimed\": " + isUnclaimed() + ", \n");
+            builder.append("\"getLikes\": " + getLikes() + ", \n");
+            builder.append("\"getLink\": " + getLink() + ", \n");
+            builder.append("\"getLocation\": " + getLocation() + ", \n");
+            builder.append("\"getMission\": " + getMission() + ", \n");
+            builder.append("\"getName\": " + getName() + ", \n");
+            builder.append("\"getParking\": " + getParking() + ", \n");
+            builder.append("\"getPicture\": " + getPicture() + ", \n");
+            builder.append("\"getPhone\": " + getPhone() + ", \n");
+            builder.append("\"getPressContanct\": " + getPressContanct() + ", \n");
+            builder.append("\"getPriceRange\": " + getPriceRange() + ", \n");
+            builder.append("\"getProducts\": " + getProducts() + ", \n");
+            builder.append("\"getRestaurantService\": " + getRestaurantService() + ", \n");
+            builder.append("\"getRestaurantSpecialties\": " + getRestaurantSpecialties() + ", \n");
+            builder.append("\"getTalkingAboutCount\": " + getTalkingAboutCount() + ", \n");
+            builder.append("\"getUsername\": " + getUsername() + ", \n");
+            builder.append("\"getWebsite\": " + getWebsite() + ", \n");
+            builder.append("\"getWereHereCount\": " + getWereHereCount() + "\n");
+            return builder.toString();
+        }
 }

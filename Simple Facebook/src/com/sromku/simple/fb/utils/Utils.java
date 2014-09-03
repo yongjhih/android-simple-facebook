@@ -1,13 +1,16 @@
 package com.sromku.simple.fb.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -16,6 +19,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,16 +32,19 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.os.Bundle;
 import android.util.Base64;
 
 import com.facebook.Response;
 import com.facebook.model.GraphMultiResult;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphObjectList;
+import com.sromku.simple.fb.entities.Story;
 import com.sromku.simple.fb.entities.User;
 
 public class Utils {
 	public static final String EMPTY = "";
+	public static final String CHARSET_NAME = "UTF-8";
 
 	public String getFacebookSDKVersion() {
 		String sdkVersion = null;
@@ -431,8 +440,12 @@ public class Utils {
 			jsonArray = new JSONArray(value);
 			return jsonArray;
 		} catch (JSONException e) {
-			return null;
+			try {
+				return (JSONArray) value;
+			} catch (Exception e1) {
+			}
 		}
+		return null;
 	}
 
 	public static GraphObject getPropertyGraphObject(GraphObject graphObject, String property) {
@@ -470,6 +483,52 @@ public class Utils {
 		};
 
 		return user;
+	}
+
+	public static String encodeUrl(Bundle parameters) {
+		if (parameters == null) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (String key : parameters.keySet()) {
+			Object parameter = parameters.get(key);
+			if (!(parameter instanceof String)) {
+				continue;
+			}
+
+			if (first) {
+				first = false;
+			} else {
+				sb.append("&");
+			}
+			try {
+				sb.append(URLEncoder.encode(key, CHARSET_NAME)).append("=").append(URLEncoder.encode(parameters.getString(key), CHARSET_NAME));
+			} catch (UnsupportedEncodingException e) {
+				Logger.logError(Story.class, "Error enconding URL", e);
+			}
+		}
+		return sb.toString();
+	}
+
+	@SuppressWarnings("resource")
+	public static String encode(String key, String data) {
+		try {
+			Mac mac = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+			mac.init(secretKey);
+			byte[] bytes = mac.doFinal(data.getBytes());
+			StringBuilder sb = new StringBuilder(bytes.length * 2);
+			Formatter formatter = new Formatter(sb);
+			for (byte b : bytes) {
+				formatter.format("%02x", b);
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			Logger.logError(Utils.class, "Failed to create sha256", e);
+			return null;
+		}
 	}
 
 }

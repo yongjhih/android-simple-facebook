@@ -50,7 +50,7 @@ public class MainFragment extends Fragment implements OnItemClickListener{
 		mExamples.add(new Example("Publish feed - dialog", PublishFeedDialogFragment.class));
 		mExamples.add(new Example("Publish feed - no dialog", PublishFeedFragment.class));
 		mExamples.add(new Example("Publish feed more options - no dialog", PublishFeedMoreFragment.class));
-//		mExamples.add(new Example("Publish story", PublishStoryFragment.class));
+		mExamples.add(new Example("Publish story - no dialog", PublishStoryFragment.class));
 		mExamples.add(new Example("Publish photo", PublishPhotoFragment.class));
 		mExamples.add(new Example("Publish video", PublishVideoFragment.class));
 		mExamples.add(new Example("Publish score", PublishScoreFragment.class));
@@ -75,9 +75,11 @@ public class MainFragment extends Fragment implements OnItemClickListener{
 		mExamples.add(new Example("Get posts", GetPostsFragment.class));
 		mExamples.add(new Example("Get profile", GetProfileFragment.class));
 		mExamples.add(new Example("Get scores", GetScoresFragment.class));
+		mExamples.add(new Example("Get objects (open graph)", GetStoryObjectsFragment.class));
 		mExamples.add(new Example("Get television", GetTelevisionFragment.class));
 		mExamples.add(new Example("Get videos", GetVideosFragment.class));
-//		mExamples.add(new Example("Additional", null));
+		mExamples.add(new Example("Misc", null));
+		mExamples.add(new Example("Create object", CreateStoryObjectFragment.class));
 //		mExamples.add(new Example("Pagination", PermissionsFragment.class));
 //		mExamples.add(new Example("Privacy", PermissionsFragment.class));
 //		mExamples.add(new Example("Configuration", PermissionsFragment.class));

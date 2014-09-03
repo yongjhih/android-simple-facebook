@@ -21,6 +21,7 @@ import com.sromku.simple.fb.actions.GetEventsAction;
 import com.sromku.simple.fb.actions.GetFamilyAction;
 import com.sromku.simple.fb.actions.GetFriendsAction;
 import com.sromku.simple.fb.actions.GetGroupsAction;
+import com.sromku.simple.fb.actions.GetInvitableFriendsAction;
 import com.sromku.simple.fb.actions.GetLikesAction;
 import com.sromku.simple.fb.actions.GetNotificationsAction;
 import com.sromku.simple.fb.actions.GetPageAction;
@@ -29,6 +30,8 @@ import com.sromku.simple.fb.actions.GetPhotosAction;
 import com.sromku.simple.fb.actions.GetPostsAction;
 import com.sromku.simple.fb.actions.GetProfileAction;
 import com.sromku.simple.fb.actions.GetScoresAction;
+import com.sromku.simple.fb.actions.GetStoryObjectsAction;
+import com.sromku.simple.fb.actions.GetTaggableFriendsAction;
 import com.sromku.simple.fb.actions.GetVideosAction;
 import com.sromku.simple.fb.actions.InviteAction;
 import com.sromku.simple.fb.actions.PublishAction;
@@ -49,6 +52,7 @@ import com.sromku.simple.fb.entities.Profile.Properties;
 import com.sromku.simple.fb.entities.Publishable;
 import com.sromku.simple.fb.entities.Score;
 import com.sromku.simple.fb.entities.Story;
+import com.sromku.simple.fb.entities.Story.StoryObject;
 import com.sromku.simple.fb.entities.Video;
 import com.sromku.simple.fb.listeners.IOnLoginListener;
 import com.sromku.simple.fb.listeners.OnAccountsListener;
@@ -57,6 +61,7 @@ import com.sromku.simple.fb.listeners.OnAlbumsListener;
 import com.sromku.simple.fb.listeners.OnAppRequestsListener;
 import com.sromku.simple.fb.listeners.OnCheckinsListener;
 import com.sromku.simple.fb.listeners.OnCommentsListener;
+import com.sromku.simple.fb.listeners.OnCreateStoryObject;
 import com.sromku.simple.fb.listeners.OnDeleteListener;
 import com.sromku.simple.fb.listeners.OnEventsListener;
 import com.sromku.simple.fb.listeners.OnFamilyListener;
@@ -75,6 +80,7 @@ import com.sromku.simple.fb.listeners.OnPostsListener;
 import com.sromku.simple.fb.listeners.OnProfileListener;
 import com.sromku.simple.fb.listeners.OnPublishListener;
 import com.sromku.simple.fb.listeners.OnScoresListener;
+import com.sromku.simple.fb.listeners.OnStoryObjectsListener;
 import com.sromku.simple.fb.listeners.OnVideosListener;
 import com.sromku.simple.fb.utils.GraphPath;
 
@@ -106,7 +112,7 @@ public class SimpleFacebook {
 	public static void initialize(Activity activity) {
 		if (mInstance == null) {
 			mInstance = new SimpleFacebook();
-			mSessionManager = new SessionManager(mInstance, mActivity, mConfiguration);
+			mSessionManager = new SessionManager(activity, mConfiguration);
 		}
 		mActivity = activity;
 		SessionManager.activity = activity;
@@ -274,7 +280,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_PHOTOS}<br>
-	 * {@link Permission#FRIENDS_PHOTOS}
 	 * 
 	 * @param entityId
 	 *            profile id or page id.
@@ -358,7 +363,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPageListener
 	 * <br>
@@ -381,7 +385,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPageListener
 	 * <br>
@@ -403,7 +406,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_CHECKINS}<br>
-	 * {@link Permission#FRIENDS_CHECKINS}
 	 * 
 	 * @param onCheckinsListener
 	 *            The callback listener.
@@ -426,7 +428,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_CHECKINS}<br>
-	 * {@link Permission#FRIENDS_CHECKINS}
 	 * 
 	 * @param entityId
 	 *            profile id or page id.
@@ -457,8 +458,7 @@ public class SimpleFacebook {
 	 * <b>Permission:</b><br>
 	 * No special permission is needed, except the permission you asked for
 	 * getting the entity itself. For example, if you want to get comments of
-	 * album, you need to have the {@link Permission#USER_PHOTOS} or
-	 * {@link Permission#FRIENDS_PHOTOS} for getting the comments of this album.
+	 * album, you need to have the {@link Permission#USER_PHOTOS} for getting the comments of this album.
 	 * 
 	 * @param entityId
 	 *            Album, Checkin, Comment, Link, Photo, Post or Video.
@@ -479,7 +479,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_EVENTS}<br>
-	 * {@link Permission#FRIENDS_EVENTS}
 	 * 
 	 * @param eventDecision
 	 *            The type of event: attending, maybe, declined.
@@ -505,7 +504,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_EVENTS}<br>
-	 * {@link Permission#FRIENDS_EVENTS}
 	 * 
 	 * @param entityId
 	 *            Profile, Page or Group.
@@ -554,7 +552,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_RELATIONSHIPS}<br>
-	 * {@link Permission#FRIENDS_RELATIONSHIPS}<br>
 	 * 
 	 * @param entityId
 	 * @param onFamilyListener
@@ -623,6 +620,28 @@ public class SimpleFacebook {
 		getFriendsAction.execute();
 	}
 
+	public void getTaggableFriends(OnFriendsListener onFriendsListener) {
+	    getTaggableFriends(null, onFriendsListener);
+	}
+
+	public void getTaggableFriends(Properties properties, OnFriendsListener onFriendsListener) {
+		GetFriendsAction getFriendsAction = new GetTaggableFriendsAction(mSessionManager);
+		getFriendsAction.setProperties(properties);
+		getFriendsAction.setActionListener(onFriendsListener);
+		getFriendsAction.execute();
+	}
+
+	public void getInvitableFriends(OnFriendsListener onFriendsListener) {
+	    getInvitableFriends(null, onFriendsListener);
+	}
+
+	public void getInvitableFriends(Properties properties, OnFriendsListener onFriendsListener) {
+		GetFriendsAction getFriendsAction = new GetInvitableFriendsAction(mSessionManager);
+		getFriendsAction.setProperties(properties);
+		getFriendsAction.setActionListener(onFriendsListener);
+		getFriendsAction.execute();
+	}
+
 	/**
 	 * Get my games. The response as you can notice is a Page because everything
 	 * in facebook has the model of Page.<br>
@@ -681,7 +700,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPagesListener
 	 * <br>
@@ -704,7 +722,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPageListener
 	 * <br>
@@ -747,7 +764,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_GROUPS}<br>
-	 * {@link Permission#FRIENDS_GROUPS}
 	 * 
 	 * @param entityId
 	 *            Profile
@@ -778,8 +794,7 @@ public class SimpleFacebook {
 	 * <b>Permission:</b><br>
 	 * No special permission is needed, except the permission you asked for
 	 * getting the entity itself. For example, if you want to get likes of
-	 * album, you need to have the {@link Permission#USER_PHOTOS} or
-	 * {@link Permission#FRIENDS_PHOTOS} for getting likes of this album.
+	 * album, you need to have the {@link Permission#USER_PHOTOS} for getting likes of this album.
 	 * 
 	 * @param entityId
 	 *            Album, Checkin, Comment, Link, Photo, Post or Video.
@@ -851,7 +866,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPagesListener
 	 * <br>
@@ -874,7 +888,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPageListener
 	 * <br>
@@ -948,7 +961,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPagesListener
 	 * <br>
@@ -971,7 +983,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPageListener
 	 * <br>
@@ -1037,7 +1048,7 @@ public class SimpleFacebook {
 		getPageAction.setProperties(properties);
 		getPageAction.execute();
 	}
-	
+
 	/**
 	 * Get pages that user liked
 	 * 
@@ -1078,7 +1089,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_PHOTOS}<br>
-	 * {@link Permission#FRIENDS_PHOTOS}
 	 * 
 	 * @param entityId
 	 *            Album, Event, Page, Profile
@@ -1323,7 +1333,20 @@ public class SimpleFacebook {
 		getScoresAction.setActionListener(onScoresListener);
 		getScoresAction.execute();
 	}
-	
+
+	/**
+	 * Get open graph objects that are stored on facebook side.
+	 * 
+	 * @param objectName
+	 * @param onStoryObjectsListener
+	 */
+	public void getStoryObjects(String objectName, OnStoryObjectsListener onStoryObjectsListener) {
+		GetStoryObjectsAction getStoryObjectsAction = new GetStoryObjectsAction(mSessionManager);
+		getStoryObjectsAction.setObjectName(objectName);
+		getStoryObjectsAction.setActionListener(onStoryObjectsListener);
+		getStoryObjectsAction.execute();
+	}
+
 	/**
 	 * Get my TV shows. The response as you can notice is a Page because
 	 * everything in facebook has the model of Page.<br>
@@ -1382,7 +1405,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPagesListener
 	 * <br>
@@ -1405,7 +1427,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_LIKES}<br>
-	 * {@link Permission#FRIENDS_LIKES}<br>
 	 * 
 	 * @param onPagesListener
 	 * <br>
@@ -1449,7 +1470,6 @@ public class SimpleFacebook {
 	 * 
 	 * <b>Permission:</b><br>
 	 * {@link Permission#USER_VIDEOS}<br>
-	 * {@link Permission#FRIENDS_VIDEOS}
 	 * 
 	 * @param entityId
 	 *            Profile, Page, Event
@@ -1603,6 +1623,28 @@ public class SimpleFacebook {
 	}
 
 	/**
+	 * Publish open graph story with dialog or without.<br>
+	 * <br>
+	 * 
+	 * <b>Permission:</b><br>
+	 * {@link Permission#PUBLISH_ACTION}
+	 * 
+	 * @param openGraph
+	 * @param onPublishListener
+	 */
+//	public void publish(Story story, boolean withDialog, OnPublishListener onPublishListener) {
+//		if (!withDialog) {
+//			// make it silently
+//			publish(story, onPublishListener);
+//		} else {
+//			PublishStoryDialogAction publishStoryDialogAction = new PublishStoryDialogAction(mSessionManager);
+//			publishStoryDialogAction.setStory(story);
+//			publishStoryDialogAction.setOnPublishListener(onPublishListener);
+//			publishStoryDialogAction.execute();
+//		}
+//	}
+
+	/**
 	 * Publish photo to specific album. You can use
 	 * {@link #getAlbums(OnAlbumsRequestListener)} to retrieve all user's
 	 * albums.<br>
@@ -1746,6 +1788,43 @@ public class SimpleFacebook {
 		inviteAction.setData(data);
 		inviteAction.setOnInviteListener(onInviteListener);
 		inviteAction.execute();
+	}
+
+	/**
+	 * Create open graph object on facebook side. <br>
+	 * <br>
+	 * 
+	 * <b>What is this method about:</b><br>
+	 * Objects can be used in two different ways:
+	 * 
+	 * <li>Self-hosted objects are represented by HTML markup on a particular
+	 * URL which uniquely defines each object. Using self-hosted objects
+	 * requires that you host them as pages on your own web server and all
+	 * self-hosted objects are public.</li>
+	 * 
+	 * <li>The Object API lets you create and manage Open Graph objects using a
+	 * simple HTTP-based API, without the requirement for a web server to host
+	 * them. The Object API can also create objects that have custom or
+	 * non-public privacy settings and includes an API for you to upload images
+	 * to Facebook to use in objects and stories.</li><br>
+	 * 
+	 * <b>This method is the second option, which means, you can create object
+	 * on facebook servers and reuse it in your app.</b><br>
+	 * <br>
+	 * 
+	 * <b>Note:</b><br>
+	 * You don't need to create the same object any time that user what to share
+	 * the story. Just reuse the same object, by having the <b>id</b> that you
+	 * got on response.
+	 * 
+	 * <br>
+	 * <br>
+	 * 
+	 * @param storyObject
+	 * @see https://developers.facebook.com/docs/opengraph/using-objects
+	 */
+	public void create(StoryObject storyObject, OnCreateStoryObject onCreateStoryObject) {
+		publish("me", (Publishable) storyObject, onCreateStoryObject);
 	}
 
 	/**

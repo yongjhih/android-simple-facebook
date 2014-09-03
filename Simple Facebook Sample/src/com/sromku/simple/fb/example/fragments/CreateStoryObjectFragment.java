@@ -1,6 +1,5 @@
 package com.sromku.simple.fb.example.fragments;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,16 +8,15 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.sromku.simple.fb.SimpleFacebook;
-import com.sromku.simple.fb.entities.Photo;
 import com.sromku.simple.fb.entities.Privacy;
 import com.sromku.simple.fb.entities.Privacy.PrivacySettings;
+import com.sromku.simple.fb.entities.Story.StoryObject;
 import com.sromku.simple.fb.example.R;
-import com.sromku.simple.fb.example.utils.Utils;
-import com.sromku.simple.fb.listeners.OnPublishListener;
+import com.sromku.simple.fb.listeners.OnCreateStoryObject;
 
-public class PublishPhotoFragment extends BaseFragment {
+public class CreateStoryObjectFragment extends BaseFragment {
 
-	private final static String EXAMPLE = "Publish photo";
+	private final static String EXAMPLE = "Create open graph object";
 
 	private TextView mResult;
 	private Button mButton;
@@ -39,23 +37,25 @@ public class PublishPhotoFragment extends BaseFragment {
 		mButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
-				final Bitmap bitmap = Utils.takeScreenshot(getActivity());
-
+				
 				// set privacy
 				Privacy privacy = new Privacy.Builder()
-					.setPrivacySettings(PrivacySettings.ALL_FRIENDS)
+					.setPrivacySettings(PrivacySettings.FRIENDS_OF_FRIENDS)
 					.build();
-
-				// create Photo instance and add some properties
-				Photo photo = new Photo.Builder()
-					.setImage(bitmap)
-					.setName("Screenshot from #android_simple_facebook sample application")
-					.setPlace("110619208966868")
+				
+				// build story object
+				StoryObject storyObject = new StoryObject.Builder()
+					.setDescription("The apple is the pomaceous fruit of the apple tree, Malus domestica of the rose family. It is one of the most widely cultivated tree fruits.")
+					.setImage("http://romkuapps.com/github/simple-facebook/apple.jpg")
+					.setNoun("food")
+					.setTitle("Apple")
+					.setUrl("https://github.com/sromku/android-simple-facebook")
 					.setPrivacy(privacy)
+					.addProperty("calories", 52)
 					.build();
-
-				SimpleFacebook.getInstance().publish(photo, new OnPublishListener() {
+				
+				// create story object
+				SimpleFacebook.getInstance().create(storyObject, new OnCreateStoryObject() {
 
 					@Override
 					public void onException(Throwable throwable) {

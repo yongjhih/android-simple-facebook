@@ -18,6 +18,7 @@ import com.facebook.widget.FacebookDialog.PendingCall;
 import com.sromku.simple.fb.Permission.Type;
 import com.sromku.simple.fb.SimpleFacebookConfiguration.Builder;
 import com.sromku.simple.fb.listeners.IOnLoginListener;
+import com.sromku.simple.fb.listeners.OnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnNewPermissionsListener;
 import com.sromku.simple.fb.listeners.OnReopenSessionListener;
@@ -300,8 +301,7 @@ public class SessionManager {
 			public void onLogout() {
 				final boolean prevValue = configuration.mAllAtOnce;
 				configuration.mAllAtOnce = showPublish;
-				login(new IOnLoginListener() {
-
+				login(new OnLoginListener() {
 					@Override
 					public void onFail(String reason) {
 						configuration.mAllAtOnce = prevValue;
@@ -330,11 +330,6 @@ public class SessionManager {
 					public void onLogin() {
 						configuration.mAllAtOnce = prevValue;
 						onNewPermissionListener.onSuccess(getAccessToken());
-					}
-
-					@Override
-					public void onLogin(SimpleFacebook simpleFacebook) {
-						onLogin();
 					}
 				});
 			}

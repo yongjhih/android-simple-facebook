@@ -197,6 +197,10 @@ public class SimpleFacebook {
 		mSessionManager.removeOnLoginListener(listener);
 	}
 
+	public String getAccessToken() {
+		return mSessionManager.getAccessToken();
+	}
+
 	/**
 	 * Logout from Facebook
 	 */

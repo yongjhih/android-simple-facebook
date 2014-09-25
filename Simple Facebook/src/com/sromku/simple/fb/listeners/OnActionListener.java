@@ -3,6 +3,7 @@ package com.sromku.simple.fb.listeners;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.actions.Cursor;
 
 public abstract class OnActionListener<T> implements OnThinkingListetener {
@@ -13,6 +14,9 @@ public abstract class OnActionListener<T> implements OnThinkingListetener {
 	}
 
 	public void onComplete(T response) {
+	}
+
+	public void onComplete(SimpleFacebook simpleFacebook, T response) {
 	}
 
 	@Override

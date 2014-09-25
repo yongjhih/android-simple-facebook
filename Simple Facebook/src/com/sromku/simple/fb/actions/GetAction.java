@@ -12,6 +12,7 @@ import com.facebook.Response;
 import com.facebook.Response.PagingDirection;
 import com.facebook.Session;
 import com.sromku.simple.fb.SessionManager;
+import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.listeners.OnActionListener;
 import com.sromku.simple.fb.utils.Errors;
 import com.sromku.simple.fb.utils.Errors.ErrorMsg;
@@ -44,6 +45,7 @@ public class GetAction<T> extends AbstractAction {
 							updateCursor(response);
 							T result = processResponse(response);
 							actionListener.onComplete(result);
+							actionListener.onComplete(simpleFacebook, result);
 						} catch (Exception e) {
 							actionListener.onException(e);
 						}
@@ -55,6 +57,10 @@ public class GetAction<T> extends AbstractAction {
 
 	public GetAction(SessionManager sessionManager) {
 		super(sessionManager);
+	}
+
+	public GetAction(SimpleFacebook simpleFacebook, SessionManager sessionManager) {
+		super(simpleFacebook, sessionManager);
 	}
 
 	public void setEdge(String edge) {

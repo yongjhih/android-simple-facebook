@@ -8,10 +8,16 @@ public abstract class AbstractAction {
 
 	protected SessionManager sessionManager;
 	protected SimpleFacebookConfiguration configuration = SimpleFacebook.getConfiguration();
+	protected SimpleFacebook simpleFacebook;
 
 	public AbstractAction(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
+		this(null, sessionManager);
 	}
+
+	public AbstractAction(SimpleFacebook simpleFacebook, SessionManager sessionManager) {
+		this.sessionManager = sessionManager;
+		this.simpleFacebook = simpleFacebook;
+    }
 
 	public void execute() {
 		executeImpl();

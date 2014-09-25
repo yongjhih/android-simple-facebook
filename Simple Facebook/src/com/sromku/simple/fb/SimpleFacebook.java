@@ -230,7 +230,7 @@ public class SimpleFacebook {
 	 *            The listener with the type you expect as response.
 	 */
 	public <T> void get(String entityId, String edge, final Bundle bundle, OnActionListener<T> onActionListener) {
-		GetAction<T> getAction = new GetAction<T>(mSessionManager) {
+		GetAction<T> getAction = new GetAction<T>(this, mSessionManager) {
 			@Override
 			protected Bundle getBundle() {
 				if (bundle != null) {

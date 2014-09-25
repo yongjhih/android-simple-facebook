@@ -1195,7 +1195,7 @@ public class SimpleFacebook {
 	 * </pre>
 	 */
 	public void getProfile(String profileId, Profile.Properties properties, OnProfileListener onProfileListener) {
-		GetProfileAction getProfileAction = new GetProfileAction(mSessionManager);
+		GetProfileAction getProfileAction = new GetProfileAction(this, mSessionManager);
 		getProfileAction.setProperties(properties);
 		getProfileAction.setTarget(profileId);
 		getProfileAction.setActionListener(onProfileListener);

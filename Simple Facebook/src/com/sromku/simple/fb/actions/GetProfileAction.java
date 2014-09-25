@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.sromku.simple.fb.SessionManager;
+import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.entities.Profile;
 import com.sromku.simple.fb.entities.Profile.Properties;
 
@@ -14,6 +15,10 @@ public class GetProfileAction extends GetAction<Profile> {
 
 	public GetProfileAction(SessionManager sessionManager) {
 		super(sessionManager);
+	}
+
+	public GetProfileAction(SimpleFacebook simpleFacebook, SessionManager sessionManager) {
+		super(simpleFacebook, sessionManager);
 	}
 
 	public void setProperties(Properties properties) {

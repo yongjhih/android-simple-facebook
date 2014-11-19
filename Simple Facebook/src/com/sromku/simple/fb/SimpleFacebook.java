@@ -54,7 +54,7 @@ import com.sromku.simple.fb.entities.Score;
 import com.sromku.simple.fb.entities.Story;
 import com.sromku.simple.fb.entities.Story.StoryObject;
 import com.sromku.simple.fb.entities.Video;
-import com.sromku.simple.fb.listeners.IOnLoginListener;
+import com.sromku.simple.fb.listeners.OnLoginListener;
 import com.sromku.simple.fb.listeners.OnAccountsListener;
 import com.sromku.simple.fb.listeners.OnActionListener;
 import com.sromku.simple.fb.listeners.OnAlbumsListener;
@@ -69,7 +69,7 @@ import com.sromku.simple.fb.listeners.OnFriendsListener;
 import com.sromku.simple.fb.listeners.OnGroupsListener;
 import com.sromku.simple.fb.listeners.OnInviteListener;
 import com.sromku.simple.fb.listeners.OnLikesListener;
-import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.SimpleOnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnNewPermissionsListener;
 import com.sromku.simple.fb.listeners.OnNotificationsListener;
@@ -185,15 +185,15 @@ public class SimpleFacebook {
 	 * 
 	 * @param onLoginListener
 	 */
-	public void login(OnLoginListener onLoginListener) {
+	public void login(SimpleOnLoginListener onLoginListener) {
 		mSessionManager.login(onLoginListener);
 	}
 
-	public void addOnLoginListener(IOnLoginListener listener) {
+	public void addOnLoginListener(OnLoginListener listener) {
 		mSessionManager.addOnLoginListener(listener);
 	}
 
-	public void removeOnLoginListener(IOnLoginListener listener) {
+	public void removeOnLoginListener(OnLoginListener listener) {
 		mSessionManager.removeOnLoginListener(listener);
 	}
 

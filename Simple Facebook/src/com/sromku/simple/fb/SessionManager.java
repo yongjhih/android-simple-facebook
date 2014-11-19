@@ -17,8 +17,8 @@ import com.facebook.widget.FacebookDialog.Callback;
 import com.facebook.widget.FacebookDialog.PendingCall;
 import com.sromku.simple.fb.Permission.Type;
 import com.sromku.simple.fb.SimpleFacebookConfiguration.Builder;
-import com.sromku.simple.fb.listeners.IOnLoginListener;
 import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.SimpleOnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnNewPermissionsListener;
 import com.sromku.simple.fb.listeners.OnReopenSessionListener;
@@ -33,7 +33,7 @@ public class SessionManager {
 	private final SessionStatusCallback mSessionStatusCallback;
 	private UiLifecycleHelper uiLifecycleHelper;
 	private SimpleFacebook simpleFacebook;
-	private List<IOnLoginListener> onLoginListeners = new ArrayList<IOnLoginListener>();
+	private List<OnLoginListener> onLoginListeners = new ArrayList<OnLoginListener>();
 
 	private Callback mFacebookDialogCallback;
 
@@ -54,14 +54,14 @@ public class SessionManager {
 	 * 
 	 * @param onLoginListener
 	 */
-	public void login(IOnLoginListener onLoginListener) {
+	public void login(OnLoginListener onLoginListener) {
 		if (onLoginListener == null) {
-			Logger.logError(TAG, "OnLoginListener can't be null in -> 'login(OnLoginListener onLoginListener)' method.");
+			Logger.logError(TAG, "SimpleOnLoginListener can't be null in -> 'login(SimpleOnLoginListener onLoginListener)' method.");
 			return;
 		}
 		onLoginListeners.add(onLoginListener);
 		if (activity == null) {
-			for (IOnLoginListener listener : onLoginListeners) {
+			for (OnLoginListener listener : onLoginListeners) {
 				listener.onFail("You must initialize the SimpleFacebook instance with you current Activity.");
 			}
 			onLoginListeners.remove(onLoginListener);
@@ -69,7 +69,7 @@ public class SessionManager {
 		}
 		if (isLogin(true)) {
 			Logger.logInfo(TAG, "You were already logged in before calling 'login()' method.");
-			for (IOnLoginListener listener : onLoginListeners) {
+			for (OnLoginListener listener : onLoginListeners) {
 				listener.onLogin();
 				listener.onLogin(simpleFacebook);
 			}
@@ -91,7 +91,7 @@ public class SessionManager {
 			openSession(session, true);
 		}
 		else {
-			for (IOnLoginListener listener : onLoginListeners) {
+			for (OnLoginListener listener : onLoginListeners) {
 				listener.onLogin();
 				listener.onLogin(simpleFacebook);
 			}
@@ -301,7 +301,7 @@ public class SessionManager {
 			public void onLogout() {
 				final boolean prevValue = configuration.mAllAtOnce;
 				configuration.mAllAtOnce = showPublish;
-				login(new OnLoginListener() {
+				login(new SimpleOnLoginListener() {
 					@Override
 					public void onFail(String reason) {
 						configuration.mAllAtOnce = prevValue;
@@ -437,13 +437,13 @@ public class SessionManager {
 		return false;
 	}
 
-	public void addOnLoginListener(IOnLoginListener listener) {
+	public void addOnLoginListener(OnLoginListener listener) {
 		if ((listener != null) && !onLoginListeners.contains(listener)) {
 			onLoginListeners.add(listener);
 		}
 	}
 
-	public void removeOnLoginListener(IOnLoginListener listener) {
+	public void removeOnLoginListener(OnLoginListener listener) {
 		if (listener != null) {
 			onLoginListeners.remove(listener);
 		}
@@ -453,8 +453,8 @@ public class SessionManager {
 		private boolean askPublishPermissions = false;
 		private boolean doOnLogin = false;
 		private OnReopenSessionListener onReopenSessionListener = null;
-		List<IOnLoginListener> onLoginListeners = new ArrayList<IOnLoginListener>();
-		IOnLoginListener onLoginListener = null;
+		List<OnLoginListener> onLoginListeners = new ArrayList<OnLoginListener>();
+		OnLoginListener onLoginListener = null;
 		OnLogoutListener onLogoutListener = null;
 
 		public void setOnReopenSessionListener(OnReopenSessionListener onReopenSessionListener) {
@@ -478,7 +478,7 @@ public class SessionManager {
 					}
 				}
 				else {
-					for (IOnLoginListener onLoginListener : onLoginListeners) {
+					for (OnLoginListener onLoginListener : onLoginListeners) {
 						onLoginListener.onException(exception);
 						// TODO onLoginListener.onException(simpleFacebook, exception);
 					}
@@ -502,7 +502,7 @@ public class SessionManager {
 				break;
 
 			case OPENING:
-				for (IOnLoginListener onLoginListener : onLoginListeners) {
+				for (OnLoginListener onLoginListener : onLoginListeners) {
 					onLoginListener.onThinking();
 					// TODO onLoginListener.onThinking(simpleFacebook);
 				}
@@ -531,7 +531,7 @@ public class SessionManager {
 						 * still want to notify about complete
 						 */
 						doOnLogin = false;
-						for (IOnLoginListener onLoginListener : onLoginListeners) {
+						for (OnLoginListener onLoginListener : onLoginListeners) {
 							onLoginListener.onLogin();
 							onLoginListener.onLogin(simpleFacebook);
 						}
@@ -543,7 +543,7 @@ public class SessionManager {
 					}
 				}
 				else {
-					for (IOnLoginListener onLoginListener : onLoginListeners) {
+					for (OnLoginListener onLoginListener : onLoginListeners) {
 						onLoginListener.onLogin();
 						onLoginListener.onLogin(simpleFacebook);
 					}
@@ -568,7 +568,7 @@ public class SessionManager {
 				else if (doOnLogin) {
 					doOnLogin = false;
 
-					for (IOnLoginListener onLoginListener : onLoginListeners) {
+					for (OnLoginListener onLoginListener : onLoginListeners) {
 						onLoginListener.onLogin();
 						onLoginListener.onLogin(simpleFacebook);
 					}
@@ -594,7 +594,7 @@ public class SessionManager {
 		}
 
 		private void notAcceptedPermission(Permission.Type type) {
-			for (IOnLoginListener onLoginListener : onLoginListeners) {
+			for (OnLoginListener onLoginListener : onLoginListeners) {
 				onLoginListener.onNotAcceptingPermissions(type);
 			}
 		}

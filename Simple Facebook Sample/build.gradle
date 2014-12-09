@@ -1,8 +1,7 @@
-apply plugin: 'android-sdk-manager'
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.facebook.android:facebook-android-sdk:3.20.+'
+    compile project(':Simple Facebook')
 }
 
 android {
@@ -12,8 +11,6 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode = Integer.parseInt(VERSION_CODE)
-        versionName = VERSION_NAME
     }
 
     lintOptions {
@@ -32,5 +29,3 @@ android {
         }
     }
 }
-
-apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'

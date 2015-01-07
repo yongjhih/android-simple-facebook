@@ -48,6 +48,7 @@ public class Photo implements Publishable {
 	private BackDatetimeGranularity mBackDatetimeGranularity;
 	private Long mCreatedTime;
 	private User mFrom;
+	private GraphObject mGraphObject;
 	private Integer mHeight;
 	private String mIcon;
 	private List<Image> mImages;
@@ -69,6 +70,8 @@ public class Photo implements Publishable {
 
 		if (graphObject == null)
 			return;
+
+		mGraphObject = graphObject;
 
 		// id
 		mId = Utils.getPropertyString(graphObject, ID);
@@ -190,6 +193,10 @@ public class Photo implements Publishable {
 
 	public List<Image> getImages() {
 		return mImages;
+	}
+
+	public String getJSONString() {
+		return mGraphObject.getInnerJSONObject().toString();
 	}
 
 	public String getLink() {

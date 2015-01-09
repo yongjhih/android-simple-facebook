@@ -25,11 +25,14 @@ public class Place {
 	private Integer mZip;
 	private Double mLatitude;
 	private Double mLongitude;
+	private GraphObject mGraphObject;
 
 	private Place(GraphObject graphObject) {
 		if (graphObject == null) {
 			return;
 		}
+
+		mGraphObject = graphObject;
 
 		// id
 		mId = Utils.getPropertyString(graphObject, ID);
@@ -105,4 +108,7 @@ public class Place {
 		return mName;
 	}
 
+	public String getJSONString() {
+		return mGraphObject.getInnerJSONObject().toString();
+	}
 }

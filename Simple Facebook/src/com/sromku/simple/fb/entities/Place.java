@@ -109,6 +109,10 @@ public class Place {
 	}
 
 	public String getJSONString() {
-		return mGraphObject.getInnerJSONObject().toString();
+		String res = null;
+		if (mGraphObject != null && mGraphObject.getInnerJSONObject() != null) {
+			res = mGraphObject.getInnerJSONObject().toString();
+		}
+		return res;
 	}
 }

@@ -194,7 +194,7 @@ public class SimpleFacebook {
 	 * 
 	 * @param onLoginListener
 	 */
-	public void login(SimpleOnLoginListener onLoginListener) {
+	public void login(OnLoginListener onLoginListener) {
 		mSessionManager.login(onLoginListener);
 	}
 

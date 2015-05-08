@@ -1138,6 +1138,28 @@ public class SimpleFacebook {
 	}
 
 	/**
+	 * Get uploaded photos.<br>
+	 * <br>
+	 *
+	 * <b>Permission:</b><br>
+	 * {@link Permission#USER_PHOTOS}<br>
+	 *
+	 * @param onPhotosListener
+	 *            The callback listener.
+	 *
+	 * @see https://developers.facebook.com/docs/graph-api/reference/user/photos/
+	 *
+	 */
+	public void getUploadedPhotos(OnPhotosListener onPhotosListener) {
+		GetPhotosAction getPhotosAction = new GetPhotosAction(mSessionManager);
+		Bundle bundle = new Bundle();
+		bundle.putString("type", "uploaded");
+		getPhotosAction.setBundle(bundle);
+		getPhotosAction.setActionListener(onPhotosListener);
+		getPhotosAction.execute();
+	}
+
+	/**
 	 * Get my profile from facebook.<br>
 	 * This method will return profile with next default properties depends on
 	 * permissions you have:<br>

@@ -1,5 +1,7 @@
 package com.sromku.simple.fb.actions;
 
+import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,20 @@ public class GetPhotosAction extends GetAction<List<Photo>> {
 	@Override
 	protected String getGraphPath() {
 		return getTarget() + "/" + GraphPath.PHOTOS;
+	}
+
+	private Bundle mBundle;
+
+	public void setBundle(Bundle bundle) {
+		mBundle = bundle;
+	}
+
+	@Override
+	protected Bundle getBundle() {
+		if (mBundle != null) {
+			return mBundle;
+		}
+		return null;
 	}
 
 	@Override

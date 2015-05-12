@@ -2,6 +2,7 @@ package com.sromku.simple.fb.entities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 import android.graphics.Bitmap;
@@ -22,31 +23,31 @@ import com.sromku.simple.fb.utils.Utils.Converter;
  */
 public class Photo implements Publishable {
 
-	private static final String ID = "id";
-	private static final String ALBUM = "album";
-	private static final String BACKDATED_TIME = "backdated_time";
-	private static final String BACKDATED_TIME_GRANULARITY = "backdate_time_granularity";
-	private static final String CREATED_TIME = "created_time";
-	private static final String FROM = "from";
-	private static final String HEIGHT = "height";
-	private static final String ICON = "icon";
-	private static final String IMAGES = "images";
-	private static final String LINK = "link";
-	private static final String PAGE_STORY_ID = "page_story_id";
-	private static final String PICTURE = "picture";
-	private static final String PLACE = "place";
-	private static final String SOURCE = "source";
-	private static final String UPDATED_TIME = "updated_time";
-	private static final String WIDTH = "width";
-	private static final String NAME = "name";
-	private static final String MESSAGE = "message"; // same as NAME
-	private static final String PRIVACY = "privacy";
+	public static final String ID = "id";
+	public static final String ALBUM = "album";
+	public static final String BACKDATED_TIME = "backdated_time";
+	public static final String BACKDATED_TIME_GRANULARITY = "backdate_time_granularity";
+	public static final String CREATED_TIME = "created_time";
+	public static final String FROM = "from";
+	public static final String HEIGHT = "height";
+	public static final String ICON = "icon";
+	public static final String IMAGES = "images";
+	public static final String LINK = "link";
+	public static final String PAGE_STORY_ID = "page_story_id";
+	public static final String PICTURE = "picture";
+	public static final String PLACE = "place";
+	public static final String SOURCE = "source";
+	public static final String UPDATED_TIME = "updated_time";
+	public static final String WIDTH = "width";
+	public static final String NAME = "name";
+	public static final String MESSAGE = "message"; // same as NAME
+	public static final String PRIVACY = "privacy";
 
 	private String mId;
 	private Album mAlbum;
-	private Long mBackDatetime;
+	private Date mBackDatetime;
 	private BackDatetimeGranularity mBackDatetimeGranularity;
-	private Long mCreatedTime;
+	private Date mCreatedTime;
 	private User mFrom;
 	private GraphObject mGraphObject;
 	private Integer mHeight;
@@ -57,7 +58,7 @@ public class Photo implements Publishable {
 	private String mPageStoryId;
 	private String mPicture;
 	private String mSource;
-	private Long mUpdatedTime;
+	private Date mUpdatedTime;
 	private Integer mWidth;
 	private Place mPlace;
 
@@ -80,14 +81,14 @@ public class Photo implements Publishable {
 		mAlbum = Album.create(graphObject.getPropertyAs(ALBUM, GraphObject.class));
 
 		// back date time
-		mBackDatetime = Utils.getPropertyLong(graphObject, BACKDATED_TIME);
+		mBackDatetime = Utils.getDate(graphObject, BACKDATED_TIME);
 
 		// back date time granularity
 		String granularity = Utils.getPropertyString(graphObject, BACKDATED_TIME_GRANULARITY);
 		mBackDatetimeGranularity = BackDatetimeGranularity.fromValue(granularity);
 
 		// created time
-		mCreatedTime = Utils.getPropertyLong(graphObject, CREATED_TIME);
+		mCreatedTime = Utils.getDate(graphObject, CREATED_TIME);
 
 		// from
 		mFrom = Utils.createUser(graphObject, FROM);
@@ -122,7 +123,7 @@ public class Photo implements Publishable {
 		mSource = Utils.getPropertyString(graphObject, SOURCE);
 
 		// updated time
-		mUpdatedTime = Utils.getPropertyLong(graphObject, UPDATED_TIME);
+		mUpdatedTime = Utils.getDate(graphObject, UPDATED_TIME);
 
 		// width
 		mWidth = Utils.getPropertyInteger(graphObject, WIDTH);
@@ -167,7 +168,7 @@ public class Photo implements Publishable {
 		return mAlbum;
 	}
 
-	public Long getBackDateTime() {
+	public Date getBackDateTime() {
 		return mBackDatetime;
 	}
 
@@ -175,7 +176,7 @@ public class Photo implements Publishable {
 		return mBackDatetimeGranularity;
 	}
 
-	public Long getCreatedTime() {
+	public Date getCreatedTime() {
 		return mCreatedTime;
 	}
 
@@ -198,6 +199,10 @@ public class Photo implements Publishable {
 	public String getJSONString() {
 		return mGraphObject.getInnerJSONObject().toString();
 	}
+
+    public GraphObject getGraphObject() {
+        return mGraphObject;
+    }
 
 	public String getLink() {
 		return mLink;
@@ -223,7 +228,7 @@ public class Photo implements Publishable {
 		return mSource;
 	}
 
-	public Long getUpdatedTime() {
+	public Date getUpdatedTime() {
 		return mUpdatedTime;
 	}
 

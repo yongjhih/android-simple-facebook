@@ -8,12 +8,16 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -388,6 +392,25 @@ public class Utils {
 			return null;
 		}
 	}
+
+    private static final SimpleDateFormat[] dateFormats = new SimpleDateFormat[] {
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US), new SimpleDateFormat("yyyy-MM-dd", Locale.US), };
+
+    public static Date getDate(GraphObject graphObject, String property) {
+        Object value = graphObject.getProperty(property);
+        for (SimpleDateFormat format : dateFormats) {
+            try {
+                Date date = format.parse((String) value);
+                if (date != null) {
+                    return date;
+                }
+            } catch (ParseException e) {
+                // Keep going.
+            }
+        }
+        return null;
+    }
 
 	public static Boolean getPropertyBoolean(GraphObject graphObject, String property) {
 		if (graphObject == null) {

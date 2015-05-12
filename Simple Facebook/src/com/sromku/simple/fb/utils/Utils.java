@@ -399,9 +399,11 @@ public class Utils {
 
     public static Date getDate(GraphObject graphObject, String property) {
         Object value = graphObject.getProperty(property);
+        if (value == null) return null;
+        String text = String.valueOf(value);
         for (SimpleDateFormat format : dateFormats) {
             try {
-                Date date = format.parse((String) value);
+                Date date = format.parse(text);
                 if (date != null) {
                     return date;
                 }

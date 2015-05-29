@@ -37,8 +37,12 @@ android {
 
 repositories {
     jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
 }
 
 dependencies {
-    compile project(':simple-facebook')
+    //compile project(':simple-facebook')
+    compile 'com.github.yongjhih:android-simple-facebook:8b9b62086c'
 }
